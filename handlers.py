@@ -5,6 +5,7 @@ from google.appengine.api import users
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
 from models import FileMetadata
+from pipelines import WordCountPipeline
 
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
@@ -62,3 +63,11 @@ class IndexHandler(webapp2.RequestHandler):
                 'length': length
             }
         ))
+
+    def post(self):
+        filekey = self.request.get('filekey')
+        blobkey = self.request.get('blobkey')
+        # Start pipelines
+        pipeline = WordCountPipeline(filekey, blobkey, with_combiner=False)
+        pipeline.start()
+        self.redirect(pipeline.base_path + '/status?root=' + pipeline.pipeline_id)
