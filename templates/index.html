@@ -13,5 +13,26 @@
     <input type="text" name="name" id="name">
     <input type="submit" value="Upload file">
 </form>
+
+{% if length %}
+    <table>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.filename }}</td>
+            <td>{{ item.uploadedOn }}</td>
+            <td>
+                {% if item.wordcount_link %}
+                <a href="{{ item.wordcount_link }}">Word Count (without Combiners)</a>
+                {% endif %}
+            </td>
+            <td>
+                {% if item.word_count_comb_link %}
+                <a href="{{ item.word_count_comb_link }}">Word Count (with Combiners)</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
 </body>
 </html>

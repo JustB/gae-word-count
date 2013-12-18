@@ -42,14 +42,23 @@ class IndexHandler(webapp2.RequestHandler):
         user = users.get_current_user()
         username = user.nickname()
         logout_url = users.create_logout_url('/')
-
         upload_url = blobstore.create_upload_url("/upload")
 
+        first = FileMetadata.getFirstKeyForUser(username)
+        last = FileMetadata.getLastKeyForUser(username)
+        q = FileMetadata.all()
+        q.filter('__key__ >', first)
+        q.filter('__key__ <', last)
+        results = q.fetch(10)
+        items = [_ for _ in results]
+        length = len(items)
 
         self.response.out.write(self.template_env.get_template('index.html').render(
             {
                 'username': username,
                 'logout_url': logout_url,
-                'upload_url': upload_url
+                'upload_url': upload_url,
+                'items': items,
+                'length': length
             }
         ))
