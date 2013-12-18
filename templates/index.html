@@ -3,9 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>MapReduce's Word Count Example</title>
+    <script src="mapreduce/jquery.js" type="text/javascript"></script>
 </head>
 <body>
 <p><a href="{{ logout_url }}">Logout</a></p>
+
 <h1>Hello Google App Engine, {{ username }}</h1>
 
 <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
@@ -15,24 +17,48 @@
 </form>
 
 {% if length %}
-    <table>
-        {% for item in items %}
-        <tr>
-            <td>{{ item.filename }}</td>
-            <td>{{ item.uploadedOn }}</td>
-            <td>
-                {% if item.wordcount_link %}
-                <a href="{{ item.wordcount_link }}">Word Count (without Combiners)</a>
-                {% endif %}
-            </td>
-            <td>
-                {% if item.word_count_comb_link %}
-                <a href="{{ item.word_count_comb_link }}">Word Count (with Combiners)</a>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+<table>
+    {% for item in items %}
+    <tr>
+        <td><input type="radio" onclick="updateForm('{{ item.key() }}',
+            '{{ item.blobkey }}', '{{ item.filename }}');"></td>
+        <td>{{ item.filename }}</td>
+        <td>{{ item.uploadedOn }}</td>
+        <td>
+            {% if item.wordcount_link %}
+            <a href="{{ item.wordcount_link }}">Word Count (without Combiners)</a>
+            {% endif %}
+        </td>
+        <td>
+            {% if item.word_count_comb_link %}
+            <a href="{{ item.word_count_comb_link }}">Word Count (with Combiners)</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 {% endif %}
+<form action="/" method="post">
+    Input File: <label id="jobName">none selected</label>
+    <input type="hidden" name="filekey" id="filekey" value="">
+    <input type="hidden" name="blobkey" id="blobkey" value="">
+
+    <div class="submitbuttons">
+        <input type="submit" id="word_count" name="word_count" value="Word Count" disabled="disabled">
+        <input type="submit" id="word_count_comb" name="word_count_comb" value="Word Count (with combiners)"
+               disabled="disabled">
+    </div>
+</form>
+
+<script>
+    function updateForm(filekey, blobkey, filename) {
+        $('#jobName').text(filename);
+        $('#filekey').val(filekey);
+        $('#blobkey').val(blobkey);
+
+        $('#word_count').removeAttr('disabled');
+        $('#word_count_comb').removeAttr('disabled');
+    }
+</script>
 </body>
 </html>
